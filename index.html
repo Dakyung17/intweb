@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>DIV SPACE</title>
+    <style>
+    body{ margin: 0px;
+    background: url('space.jpg') no-repeat center center fixed;
+    background-size: cover;
+    
+    
+    }
+    .box{
+        position: absolute;
+        width: 10vw;
+        height: 10vh;
+        font-size: 9pt;
+        text-align: center;
+        transition: opacity 0.2s ease-out, background-color 0.2s ease-out;
+        opacity: 1;
+        pointer-events: none;
+
+    }
+
+
+    </style>
+</head>
+
+<body>
+
+
+
+<script>
+
+
+
+let texts = "";
+
+
+for (let y=0; y<10; y++) {
+    for (let x=0; x<10; x++) {
+        let _left =x*10;
+        let _top =y*10;
+        
+        texts += `<div class='box'
+            style='left:${_left}vw; top:${_top}vh;
+            background-color:rgba(0,0,0,0.5);
+            '>
+          
+            </div>`;
+        
+    }
+}
+
+
+document.write(texts);
+
+
+
+
+let mousex = 0, mousey = 0;
+document.addEventListener("mousemove", (e)=>{
+    mousex = e.clientX;
+    mousey = e.clientY;
+});
+
+let vw = window.innerWidth;
+let vh = window.innerHeight;
+let boxes = document.querySelectorAll(".box");
+
+let hoveredBox = null;
+    boxes.forEach(box => {
+        box.addEventListener("mouseenter", () => {
+            hoveredBox = box;
+        });
+        box.addEventListener("mouseleave", () => {
+            hoveredBox = null;
+        });
+    });
+
+function changeColor () {
+
+    for (let i = 0; i < boxes.length; i++) {
+
+        let box = boxes[i];
+        let rect = box.getBoundingClientRect();
+        let boxX = rect.left+rect.width/2;
+        let boxY = rect.top + rect.height/2;
+        let dx = Math.abs(mousex - boxX);
+        let dy = Math.abs(mousey - boxY);
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        let maxdistance = Math.sqrt(vw*vw+vh*vh);
+        let normal = Math.pow(Math.min(distance/(maxdistance*0.3),1), 0.8);
+        if (box === hoveredBox) {
+            normal = 0;
+        }
+        box.style.backgroundColor = `rgba(0,0,0,${normal})`;
+           
+    };
+    requestAnimationFrame(changeColor);
+}
+
+changeColor();
+
+
+let isSee = false;
+
+document.addEventListener("click", (e) => {
+    isSee = !isSee;
+
+    let clickX = e.clientX;
+    let clickY = e.clientY;
+
+
+    boxes.forEach((box) => {
+        let rect = box.getBoundingClientRect();
+        let boxX = rect.left + rect.width / 2;
+        let boxY = rect.top + rect.height / 2;
+
+        let dx = clickX - boxX;
+        let dy = clickY - boxY;
+        let distance = Math.sqrt(dx*dx + dy*dy);
+        let maxdistance = Math.sqrt(vw*vw + vh*vh);
+
+        if(isSee) {
+            delay = distance * 0.5;
+        } else {
+            delay = (1-(distance/maxdistance))*maxdistance * 0.5;
+        }
+        setTimeout(() => {
+            box.style.opacity = isSee ? 0 : 1;
+        }, delay);
+    });
+});
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
